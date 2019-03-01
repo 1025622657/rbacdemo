@@ -1,0 +1,175 @@
+{% extends 'motherblank/layout.html' %}
+{% block content %}
+    {#一个id绑定一个图表   #}
+    <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+    <div id="container1" style="min-width: 500px; height: 500px; max-width: 600px; margin: 0 auto"></div>
+{% endblock %}
+{% block js %}
+    {#导入本地下载的pchart文件，也可使用CDN服务（把静态文件路径放这）#}
+    <script src="/static/Highcharts-6.1.0/Highcharts-6.1.0/code/highcharts.js"></script>
+    <script src="/static/Highcharts-6.1.0/Highcharts-6.1.0/code/modules/exporting.js"></script>
+    <script src="/static/Highcharts-6.1.0/Highcharts-6.1.0/code/modules/export-data.js"></script>
+    <script type="text/javascript">
+    //数据加载完再发送POST请求
+        $(function () {
+            $.ajax({
+                url: '/report.html',
+                type: 'POST',
+                data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: 'JSON',
+                success: function (arg) {
+                    //arg,后台返回的数据，用于下面图表
+                    console.log(arg)
+                    //饼型图表
+                    Highcharts.chart('container', {
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            type: 'pie'
+                        },
+                        title: {
+                            text: '运维人员占比'
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                    style: {
+                                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                    }
+                                }
+                            }
+                        },
+                        series: [{
+                            name: 'Brands',
+                            colorByPoint: true,
+                            //饼图数据
+                            data: arg.pie,
+                        }]
+                    });
+
+                    //折线型图表，x轴，y轴动态变化
+                    var chart = new Highcharts.Chart('container1',{
+                        title: {
+                            text: 'Solar Employment Growth by Sector'
+                        },
+
+                        subtitle: {
+                            text: 'www.baidu.com'
+                        },
+                        //x轴设置
+                        xAxis: {
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.value);//x轴内容
+                                },
+                                rotation:10 //设置x轴间隔密度
+                            }
+                        },
+                        //y轴显示，不写则使用默认values显示
+                        yAxis:{
+                            title:{
+                                text:'数值'
+                            }
+                        },
+                        chart:{
+                            events:{
+                                load:function(e){
+                                    //图标加载时，执行的函数，
+                                    //即框架加载完成时执行
+                                   alert('图片显示完成')
+
+                                }
+                            }
+                        },
+
+                        //各个参数样式显示及说明，不设置则使用默认
+                        legend: {
+                            layout: 'vertical',//上下结构
+                            align: 'right',//右边
+                            verticalAlign: 'middle',//中间位置
+                             borderWidth:1  ,//边框宽度设置
+                        },
+
+                        //右下角显示的链接,不设置则显示默认
+                        credits:{
+                            cnable:true,
+                            position:{
+                              align:'right',
+                              verticalAlign:'bottom',
+                            },
+                            text:'百度',
+                            href:'http://www.baidu.com'
+                        },
+
+
+                        //鼠标移动到某条线上的某点时，样式的显示,定制则通过如下修改，默认与如下同
+                        tooltip:{
+                            //valueSuffix:'个',
+                            //xDateFormat:'%Y-%m-%d %H:%M:%S',
+                            pointFormatter:function(e){
+                                var tpl = '<span style="color:>' + this.series.color + '">●</span>'+this.series.name + ':<b>'+this.y+'个</b><br/>';
+                                return tpl;
+                            },
+                            valueDecimals:10,
+                            useHTML:true
+                        },
+
+                        //点击某条线中的某点时绑定事件
+                        plotOptions:{
+                            series:{
+                                cursor:'pointer',
+                                events:{
+                                    click:function(event){
+                                        //点击某个指定点时，执行的事件
+                                        console.log(this.name,event.point.x,event.point.y);
+                                    }
+                                }
+                            }
+                        },
+
+
+
+                        //折线型图表，数据接收
+                        series: arg.line,
+
+
+                        responsive: {
+                            rules: [{
+                                condition: {
+                                    maxWidth: 10000
+                                },
+
+                                chartOptions: {
+                                    legend: {
+                                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom'
+                                    }
+                                }
+                            }]
+                        }
+
+                    });
+
+                    //动态添加数据
+                    chart.addSeries({name:'陈可',data:[
+                            [1526054400000.0,5.0],
+                            [1526140800000.0,8.9],
+                            [1526313600000.0,9.9],
+                            ]})
+
+                }
+            });
+        })
+    </script>
+
+
+{% endblock %}

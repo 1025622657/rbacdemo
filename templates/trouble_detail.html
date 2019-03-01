@@ -1,0 +1,13 @@
+{% extends 'motherblank/layout.html' %}
+{% block content %}
+    <h3>订单详情页面</h3>
+    <p>标题:{{ detail_obj.title }}</p>
+    <p>内容:{{ detail_obj.detail }}</p>
+    <p>创建用户:{{ request.session.user_info.nickname }}</p>
+    <p>创建时间:{{ time.ctime }}</p>
+    {% for item in detail_obj.status_choice %}
+        {% if item.0 == detail_obj.status %}
+            <p>订单状态:{{ item.1 }}</p>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

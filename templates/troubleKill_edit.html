@@ -1,0 +1,22 @@
+{% extends 'motherblank/layout.html' %}
+{% block content %}
+    <h3>编辑订单页面</h3>
+    <form action="/trouble-kill.html?md=edit&nid={{ nid }}" method="POST" novalidate>
+        {% csrf_token %}
+
+
+            <p>标题:{{ per_order.title }}{{ per_order.errors.title.0 }}</p>
+            <p>详细:{{ per_order.detail }}{{ per_order.errors.detail.0 }}</p>
+
+            <p>状态:{{ per_order.status }}{{ per_order.errors.status.0 }}</p>
+
+            <p>创建人:{{ per_order.create_user_id }}</p>
+
+            <p>创建时间:{{ per_order.ctime }}</p>
+            <p>处理方案:{{ per_order.solution }}{{ per_order.errors.solution.0 }}</p>
+            <p>处理人:{{ per_order.processor_id }}</p>
+
+
+        <input type="submit" value="提交">
+    </form>
+{% endblock %}

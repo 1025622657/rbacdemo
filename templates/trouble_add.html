@@ -1,0 +1,14 @@
+{% extends 'motherblank/layout.html' %}
+{% block content %}
+
+    <h3>添加订单</h3>
+    <form action="/trouble.html?md=post" method="POST" novalidate>
+        {% csrf_token %}
+        <p>标题:{{ createOrder.title }}{{ createOrder.errors.title }}</p>
+        <p>详细:{{ createOrder.detail }}{{ createOrder.errors.detail }}</p>
+        <p>创建用户:{{ request.session.user_info.nickname }}{{ createOrder.create_user_id }}</p>
+        <p>状态:{{ createOrder.status }}</p>
+        <input type="submit" value="提交">
+    </form>
+
+{% endblock %}

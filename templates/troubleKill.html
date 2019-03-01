@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h3>订单</h3>
+    <div>
+        {% if 'POST' in request.permission_code_list %}
+            <a href="/trouble-kill.html?md=post">添加</a>
+        {% endif %}
+    </div>
+    <table border="1">
+         <thead>
+            <th>标题</th>
+            <th>详细</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        {% for item in order_list %}
+            {% for row in item.status_choice %}
+                {% if row.0 == item.status %}
+                <tbody>
+                    <tr>
+                        <td><p>标题:{{ item.title }}</p></td>
+                        <td><p>详细:{{ item.detail }}</p></td>
+                        <td><p>状态:{{ row.1 }}</p></td>
+                        <td>
+                            {% if 'EDIT' in request.permission_code_list %}
+                                <a href="/trouble-kill.html?md=edit&nid={{ item.id }}">编辑</a>
+                            {% endif %}
+                            {% if 'DELETE' in request.permission_code_list %}
+                                <a href="/trouble-kill?md=delete&nid={{ item.id }}">删除</a>
+                            {% endif %}
+                            {% if 'DETAIL' in request.permission_code_list %}
+                                <a href="/trouble-kill?md=detail&nid={{ item.id }}">查看详细</a>
+                            {% endif %}
+
+
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+     </table>
+</body>
+</html>

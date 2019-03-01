@@ -1,0 +1,23 @@
+{% extends 'motherblank/layout.html' %}
+{% block content %}
+    <h3>订单详情页面</h3>
+    <div>
+        <p>标题:{{ obj.title }}</p>
+        <p>详细:{{ obj.detail }}</p>
+        <p>创建用户:{{ obj.create_user.nickname }}</p>
+        <p>创建时间:{{ obj.ctime|date:"Y-m-d H:i:s" }}</p>
+        {% if obj.status == 3 %}
+            <p>状态:{{ obj.get_status_display }}</p>
+            <p>解决方案:{{ obj.solution }}</p>
+            <p>处理时间:{{ obj.ptime|date:"Y-m-d H:i:s" }}</p>
+            <p>处理人:{{ obj.processor.nickname }}</p>
+
+        {%  elif obj.status == 2 %}
+            <p>状态:{{ obj.get_status_display }}</p>
+            <p>处理人:{{ obj.processor.nickname }}</p>
+
+        {%  elif obj.status == 1 %}
+            <p>状态:{{ obj.get_status_display }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+rbac是一个基于Django开发的app,用于解决通用权限管理
+使用方法：
+1.在settings配置文件中注册App,即：rbac
+    INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'rbac',
+]
+2.在settings配置文件中引入rbac用于权限控制中间件
+MIDDLEWARE = [
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rbac.middleware.rbac.RbacMiddleware',
+]
+3.在settings配置文件中设置rbac需要的配置
+    a.无需权限控制的URL
+        RBAC_NO_AUTH_URL = [
+        '/index.html',
+        '/login.html',
+        'register.html',
+        'admin.*',
+        ...
+        ]
+4.Session中保存权限信息的Key
+    RBAC_PERMISSION_SESSION_KEY = "rbac_permission_session_key"
+    注意:登录时，获取当前用户权限信息并保存在该Session中，
+    以后每次访问时，都会到中间件中根据此key去session获取权限信息
+
+5.Session中保存菜单和权限信息的Key
+    RBAC_MENU_PERMISSION_SESSION_KEY = "rbac_menu_permission_session_key"
+    RBAC_MENU_KEY = "rbac_menu_key"
+    RBAC_MENU_PERMISSION_KEY = "rbac_menu_permission_key"
+    注：登录时，获取当前用户菜单以及权限并保存在Session中，用于自动创建当前用户菜单
+
+    # session['rbac_menu_permission_session_key'] = {
+    #     "rbac_menu_key":菜单信息，
+    #     "rbac_menu_permission_key":权限信息,
+    # }
+
+6.菜单主题
+    RBAC_THEME = "default"
+    注意:自动创建当前用户菜单时指定的主题
+7.Http请求中传的参数，根据其获取GET,POST,EDIT等检测用户是否具有相应权限
+例如：
+    http://www.example.com?md=get  表示获取
+    http://www.example.com?md=post  表示添加
+    http://www.example.com?md=delete  表示删除
+    RBAC_QUERY_KEY = "md"
+8.无权访问时，页面提示信息
+RBAC_PERMISSION_MSG = "无权限访问"
+
+9.在数据加中创建用户、角色、权限、菜单以及分配相应权限
+
+10.用户登录
+    用户登录成功，需要初始化权限以及菜单信息，如
+    from rbac.service import initial_permission
+    request：当前请求对象
+    user_id:批rbac表中的user_id
+    from rbac.service import initial_permission
+    initial_permission(request,obj.user_id)
+
+11.把rbac当组件使用，把rbac文件夾放在项目目录下，与其他app一起使用，如app01
+app01的models下创建数据结构
+from django.db import models
+from rbac.models import User as RbacUser
+
+
+class UserInfo(models.Model):
+    nickname = models.CharField(max_length=16)
+    user = models.OneToOneField(RbacUser,on_delete=models.CASCADE)
+即通过user字段跨到rbac下的User表
+
+12.模版的渲染通过前端simple_tag实现
+templatetags下rbac.py
